@@ -130,7 +130,7 @@
             atualizarProgresso();
         }
 
-        window.addEventListener('wheel', function (event) {
+        function handleScroll() {
             if (currentMisterios.length > 0 && canScroll) {
                 canScroll = false;
                 if (event.deltaY > 0) {
@@ -146,7 +146,13 @@
                     canScroll = true;
                 }, 1000); // Bloqueio de 1 segundo
             }
-        });
+        };
+
+        // Listener para eventos de rolagem em desktops
+        window.addEventListener('wheel', handleScroll);
+
+        // Listener para eventos de rolagem em dispositivos móveis
+        window.addEventListener('touchmove', handleScroll);
 
         window.addEventListener('keydown', function (event) {
             if (currentMisterios.length > 0 && canScroll) {
