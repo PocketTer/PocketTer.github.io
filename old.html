@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terços e Rosário</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Terços e Rosário</h1>
+    </header>
+    <main>
+        <section class="tercos" id="tercos">
+            <h2>Escolha um Terço:</h2>
+            <ul>
+                <li><a href="#" onclick="mostrarMisterio('gozoso')">Gozoso</a></li>
+                <li><a href="#" onclick="mostrarMisterio('doloroso')">Doloroso</a></li>
+                <li><a href="#" onclick="mostrarMisterio('luminoso')">Luminoso</a></li>
+                <li><a href="#" onclick="mostrarMisterio('glorioso')">Glorioso</a></li>
+                <li><a href="#" onclick="mostrarMisterio('rosario')">Rosário</a></li>
+            </ul>
+        </section>
+        <section class="misterios" id="misterios">
+            <button class="voltar" id="voltar" onclick="voltar()">Voltar</button>
+            <!-- O conteúdo dos mistérios será exibido aqui -->
+        </section>
+        <section class="agradecimento" id="agradecimento">
+            <h2>Obrigado por rezar o terço completo!</h2>
+            <button onclick="voltar()">Voltar</button>
+        </section>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+    </main>
+    <script>
+        let currentMisterioIndex = 0;
+        let currentMisterios = [];
+        let canScroll = true;
+
+        function mostrarMisterio(tipo) {
+            const misterios = {
+                gozoso: [
+                    'A Anunciação do Anjo a Maria',
+                    'A Visitação de Maria a Isabel',
+                    'O Nascimento de Jesus',
+                    'A Apresentação de Jesus no Templo',
+                    'O Encontro de Jesus no Templo'
+                ],
+                doloroso: [
+                    'A Agonia de Jesus no Horto',
+                    'A Flagelação de Jesus',
+                    'A Coroação de Espinhos',
+                    'Jesus Carrega a Cruz',
+                    'A Crucificação e Morte de Jesus'
+                ],
+                luminoso: [
+                    'O Batismo de Jesus no Jordão',
+                    'O Milagre nas Bodas de Caná',
+                    'O Anúncio do Reino de Deus',
+                    'A Transfiguração de Jesus',
+                    'A Instituição da Eucaristia'
+                ],
+                glorioso: [
+                    'A Ressurreição de Jesus',
+                    'A Ascensão de Jesus ao Céu',
+                    'A Descida do Espírito Santo',
+                    'A Assunção de Maria',
+                    'A Coroação de Maria no Céu'
+                ],
+                rosario: [
+                    'Inclui todos os mistérios: Gozosos, Dolorosos, Luminosos e Gloriosos.'
+                ]
+            };
+
+            currentMisterios = [];
+            misterios[tipo].forEach(misterio => {
+                currentMisterios.push('Creio');
+                currentMisterios.push('Pai-Nosso');
+                for (let i = 0; i < 3; i++) {
+                    currentMisterios.push('Ave-Maria ' + (i + 1));
+                }
+                currentMisterios.push('Glória ao Pai');
+                currentMisterios.push(misterio);
+                currentMisterios.push('Pai-Nosso');
+                for (let i = 0; i < 10; i++) {
+                    currentMisterios.push('Ave-Maria ' + (i + 1));
+                }
+                currentMisterios.push('Glória ao Pai');
+            });
+
+            currentMisterioIndex = 0;
+
+            document.getElementById('tercos').style.display = 'none';
+            document.getElementById('voltar').style.display = 'block';
+            document.getElementById('agradecimento').style.display = 'none';
+            atualizarMisterio();
+            atualizarProgresso();
+        }
+
+        function atualizarMisterio() {
+            if (currentMisterioIndex >= currentMisterios.length) {
+                document.getElementById('misterios').style.display = 'none';
+                document.getElementById('agradecimento').style.display = 'block';
+            } else {
+                document.getElementById('misterios').innerHTML = `<h2>${currentMisterios[currentMisterioIndex]}</h2>`;
+                document.getElementById('misterios').style.display = 'flex';
+                document.getElementById('agradecimento').style.display = 'none';
+            }
+        }
+
+        function atualizarProgresso() {
+            const progressBar = document.getElementById('progress-bar');
+            const progress = (currentMisterioIndex / currentMisterios.length) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        function voltar() {
+            document.getElementById('tercos').style.display = 'block';
+            document.getElementById('voltar').style.display = 'none';
+            document.getElementById('misterios').innerHTML = '';
+            document.getElementById('misterios').style.display = 'flex';
+            document.getElementById('agradecimento').style.display = 'none';
+            currentMisterios = [];
+            currentMisterioIndex = 0;
+            atualizarProgresso();
+        }
+
+        window.addEventListener('wheel', function (event) {
+            if (currentMisterios.length > 0 && canScroll) {
+                canScroll = false;
+                if (event.deltaY > 0) {
+                    // Scroll down
+                    currentMisterioIndex = (currentMisterioIndex + 1) % (currentMisterios.length + 1);
+                } else {
+                    // Scroll up
+                    currentMisterioIndex = (currentMisterioIndex - 1 + currentMisterios.length + 1) % (currentMisterios.length + 1);
+                }
+                atualizarMisterio();
+                atualizarProgresso();
+                setTimeout(() => {
+                    canScroll = true;
+                }, 1000); // Bloqueio de 1 segundo
+            }
+        });
+
+        window.addEventListener('keydown', function (event) {
+            if (currentMisterios.length > 0 && canScroll) {
+                if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+                    // Next mistery
+                    currentMisterioIndex = (currentMisterioIndex + 1) % (currentMisterios.length + 1);
+                } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+                    // Previous mistery
+                    currentMisterioIndex = (currentMisterioIndex - 1 + currentMisterios.length + 1) % (currentMisterios.length + 1);
+                }
+                atualizarMisterio();
+                atualizarProgresso();
+                canScroll = false;
+                setTimeout(() => {
+                    canScroll = true;
+                }, 1000); // Bloqueio de 1 segundo
+            }
+        });
+    </script>
+</body>
+
+</html>

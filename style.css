@@ -1,0 +1,80 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.tercos ul {
+    list-style: none;
+    padding: 0;
+}
+
+.tercos li {
+    margin-bottom: 10px;
+}
+
+.tercos a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+.tercos a:hover {
+    text-decoration: underline;
+}
+
+.misterios {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.voltar {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.agradecimento {
+    display: none;
+    text-align: center;
+}
+
+.progress-container {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #f3f3f3;
+}
+
+.progress-bar {
+    height: 30px;
+    background-color: #4caf50;
+    width: 0%;
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: white;
+}
