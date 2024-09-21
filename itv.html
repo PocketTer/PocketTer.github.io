@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecionamento Inteligente</title>
+</head>
+<body>
+    <div id="resultado"></div>
+
+    <script>
+        // Função para fazer a requisição e atualizar o DOM
+        async function fetchAndDisplayData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const path = urlParams.get('path') || ''; // Pega a parte da URL após o '?'
+
+            try {
+                const response = await fetch(`http://1111.wf/${path}`);
+                const data = await response.json();
+                document.getElementById('resultado').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                console.error('Erro ao buscar dados:', error);
+                document.getElementById('resultado').textContent = 'Erro ao carregar dados.';
+            }
+        }
+
+        fetchAndDisplayData();
+    </script>
+</body>
+</html>
