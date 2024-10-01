@@ -195,7 +195,7 @@
   </div>
   <script>
     (function() {
-      let GG_ALL_GAME_CONFIG = {
+      let GG_ALL_TERCO_CONFIG = {
         diasMisterios: {
           'Segunda-feira': 'Gozosos',
           'Terça-feira': 'Dolorosos',
@@ -210,32 +210,32 @@
         temaEscuro: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches, // Configuração para tema escuro
         misterios: {
           'Gozosos': [
-            'Anunciação do Anjo a Maria',
-            'Visitação de Maria a Santa Isabel',
-            'Nascimento de Jesus em Belém',
-            'Apresentação de Jesus no Templo',
-            'Jesus achado no Templo'
+            'No primeiro mistério gozoso contemplamos a Anunciação do Anjo a Maria',
+            'No segundo mistério gozoso contemplamos a visita de Maria a sua prima Santa Isabel',
+            'No terceiro mistério gozoso contemplamos o nascimento de Jesus em Belém',
+            'No quarto mistério gozoso contemplamos a apresentação do Menino Jesus no Templo',
+            'No quinto mistério gozoso contemplamos a perda e o encontro do Menino Jesus no Templo'
           ],
           'Luminosos': [
-            'Batismo de Jesus no Rio Jordão',
-            'As Bodas de Caná',
-            'Proclamação do Reino de Deus e chamado à conversão',
-            'Transfiguração de Jesus',
-            'Instituição da Eucaristia'
+            'No primeiro mistério luminoso contemplamos o Batismo de Jesus no Rio Jordão',
+            'No segundo mistério luminoso contemplamos a auto-revelação de Jesus nas Bodas de Caná',
+            'No terceiro mistério luminoso contemplamos o anúncio do Reino de Deus, com o convite à conversão',
+            'No quarto mistério luminoso contemplamos a Transfiguração de Jesus no Monte Tabor',
+            'No quinto mistério luminoso contemplamos a instituição da Eucaristia, expressão do amor de Jesus pela humanidade'
           ],
           'Dolorosos': [
-            'Agonia de Jesus no Horto',
-            'Flagelação de Jesus',
-            'Coroação de espinhos',
-            'Jesus carrega a cruz',
-            'Crucificação e morte de Jesus'
+            'No primeiro mistério doloroso contemplamos a agonia de Jesus no Horto das Oliveiras',
+            'No segundo mistério doloroso contemplamos a flagelação de Jesus',
+            'No terceiro mistério doloroso contemplamos a coroação de espinhos',
+            'No quarto mistério doloroso contemplamos a subida ao Calvário',
+            'No quinto mistério doloroso contemplamos a crucificação e morte de Jesus'
           ],
           'Gloriosos': [
-            'Ressurreição de Jesus',
-            'Ascensão de Jesus aos céus',
-            'Descida do Espírito Santo sobre Maria e os Apóstolos',
-            'Assunção de Maria aos céus',
-            'Coroação de Maria como Rainha do Céu e da Terra'
+            'No primeiro mistério glorioso contemplamos a Ressurreição de Jesus',
+            'No segundo mistério glorioso contemplamos a Ascensão de Jesus aos céus',
+            'No terceiro mistério glorioso contemplamos a descida do Espírito Santo sobre os Apóstolos reunidos com Maria no Cenáculo',
+            'No quarto mistério glorioso contemplamos a Assunção de Maria ao Céu',
+            'No quinto mistério glorioso contemplamos a coroação de Maria Santíssima como Rainha do Céu e da Terra'
           ]
         },
         oracoes: {
@@ -265,7 +265,7 @@
 
       function obterMisteriosDoDia() {
         const dia = obterDiaSemana();
-        return GG_ALL_GAME_CONFIG.misterios[GG_ALL_GAME_CONFIG.diasMisterios[dia]];
+        return GG_ALL_TERCO_CONFIG.misterios[GG_ALL_TERCO_CONFIG.diasMisterios[dia]];
       }
 
       function iniciarTerco(tipoMisterio) {
@@ -285,7 +285,7 @@
         const tituloTerco = document.getElementById('titulo-terco');
         if (misterioEscolhido === 'dia') {
           const diaSemana = obterDiaSemana();
-          const misteriosDoDia = GG_ALL_GAME_CONFIG.diasMisterios[diaSemana];
+          const misteriosDoDia = GG_ALL_TERCO_CONFIG.diasMisterios[diaSemana];
           tituloTerco.textContent = `Mistérios ${misteriosDoDia} (${diaSemana})`;
         } else if (rosarioCompleto) {
           tituloTerco.textContent = `Rosário Completo - Mistérios ${ordemRosarioCompleto[indiceRosarioCompleto]}`;
@@ -302,52 +302,52 @@
         if (misterioEscolhido === 'dia') {
           misteriosAtuais = obterMisteriosDoDia();
         } else if (rosarioCompleto) {
-          misteriosAtuais = GG_ALL_GAME_CONFIG.misterios[ordemRosarioCompleto[indiceRosarioCompleto]];
+          misteriosAtuais = GG_ALL_TERCO_CONFIG.misterios[ordemRosarioCompleto[indiceRosarioCompleto]];
         } else {
-          misteriosAtuais = GG_ALL_GAME_CONFIG.misterios[misterioEscolhido];
+          misteriosAtuais = GG_ALL_TERCO_CONFIG.misterios[misterioEscolhido];
         }
         if (etapaAtual === -1) {
-          oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Sinal da Cruz'];
+          oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Sinal da Cruz'];
           progressoTexto.textContent = 'Sinal da Cruz';
         } else if (etapaAtual === 0) {
           const tipo = rosarioCompleto ? 'rosário' : 'terço';
-          oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Oferecimento'].replace('{tipo}', tipo);
+          oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Oferecimento'].replace('{tipo}', tipo);
           progressoTexto.textContent = 'Oferecimento';
         } else if (etapaAtual === 1) {
-          oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Credo'];
+          oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Credo'];
           progressoTexto.textContent = 'Credo';
         } else if (etapaAtual === 2) {
-          oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Pai Nosso'];
+          oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Pai Nosso'];
           progressoTexto.textContent = 'Pai Nosso inicial';
         } else if (etapaAtual >= 3 && etapaAtual <= 5) {
-          oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Ave Maria'];
+          oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Ave Maria'];
           progressoTexto.textContent = `Ave Maria ${etapaAtual - 2} de 3`;
         } else if (misterioAtual < 5) {
           if (contagemAveMaria === 0) {
-            oracaoTexto.textContent = `${misterioAtual + 1}º Mistério: ${misteriosAtuais[misterioAtual]}`;
+            oracaoTexto.textContent = misteriosAtuais[misterioAtual];
             progressoTexto.textContent = `${misterioAtual + 1}º Mistério`;
           } else if (contagemAveMaria === 1) {
-            oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Pai Nosso'];
+            oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Pai Nosso'];
             progressoTexto.textContent = `${misterioAtual + 1}º Mistério - Pai Nosso`;
           } else if (contagemAveMaria <= 11) {
-            if (GG_ALL_GAME_CONFIG.pularAveMarias) {
+            if (GG_ALL_TERCO_CONFIG.pularAveMarias) {
               proximaEtapa();
               return;
             }
-            oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Ave Maria'];
+            oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Ave Maria'];
             progressoTexto.textContent = `${misterioAtual + 1}º Mistério - Ave Maria ${contagemAveMaria - 1} de 10`;
           } else if (contagemAveMaria === 12) {
-            oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Glória'];
+            oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Glória'];
             progressoTexto.textContent = `${misterioAtual + 1}º Mistério - Glória`;
           } else {
-            oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Ó Meu Jesus'];
+            oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Ó Meu Jesus'];
             progressoTexto.textContent = `${misterioAtual + 1}º Mistério - Ó Meu Jesus`;
           }
         } else if (misterioAtual === 5 && (!rosarioCompleto || indiceRosarioCompleto === ordemRosarioCompleto.length - 1)) {
-          oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Agradecimento'];
+          oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Agradecimento'];
           progressoTexto.textContent = 'Agradecimento';
         } else if (misterioAtual === 6 && (!rosarioCompleto || indiceRosarioCompleto === ordemRosarioCompleto.length - 1)) {
-          oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Salve Rainha'];
+          oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Salve Rainha'];
           progressoTexto.textContent = 'Salve Rainha';
         } else {
           proximaEtapa();
@@ -404,26 +404,26 @@
       // Adicionar evento para o toggle de pular Ave-Marias
       // Função para alternar o tema
       function toggleTheme() {
-        GG_ALL_GAME_CONFIG.temaEscuro = !GG_ALL_GAME_CONFIG.temaEscuro;
-        document.body.classList.toggle('dark-theme', GG_ALL_GAME_CONFIG.temaEscuro);
-        localStorage.setItem('temaEscuro', GG_ALL_GAME_CONFIG.temaEscuro);
+        GG_ALL_TERCO_CONFIG.temaEscuro = !GG_ALL_TERCO_CONFIG.temaEscuro;
+        document.body.classList.toggle('dark-theme', GG_ALL_TERCO_CONFIG.temaEscuro);
+        localStorage.setItem('temaEscuro', GG_ALL_TERCO_CONFIG.temaEscuro);
       }
       // Inicializar o tema
-      if (GG_ALL_GAME_CONFIG.temaEscuro) {
+      if (GG_ALL_TERCO_CONFIG.temaEscuro) {
         document.body.classList.add('dark-theme');
       }
       // Adicionar evento para o toggle de tema
       document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
       // Adicionar evento para o toggle de pular Ave-Marias
       document.getElementById('pular-ave-marias').addEventListener('change', function(event) {
-        GG_ALL_GAME_CONFIG.pularAveMarias = event.target.checked;
+        GG_ALL_TERCO_CONFIG.pularAveMarias = event.target.checked;
       });
       // Verificar se há uma preferência de tema salva
       const savedTheme = localStorage.getItem('temaEscuro');
       if (savedTheme !== null) {
-        GG_ALL_GAME_CONFIG.temaEscuro = savedTheme === 'true';
-        document.body.classList.toggle('dark-theme', GG_ALL_GAME_CONFIG.temaEscuro);
-        document.getElementById('theme-toggle').checked = GG_ALL_GAME_CONFIG.temaEscuro;
+        GG_ALL_TERCO_CONFIG.temaEscuro = savedTheme === 'true';
+        document.body.classList.toggle('dark-theme', GG_ALL_TERCO_CONFIG.temaEscuro);
+        document.getElementById('theme-toggle').checked = GG_ALL_TERCO_CONFIG.temaEscuro;
       }
 
       function voltarAoMenu() {
@@ -458,10 +458,10 @@
       });
 
       function handleSwipe() {
-        if (touchendX < touchstartX - GG_ALL_GAME_CONFIG.swipeThreshold) {
+        if (touchendX < touchstartX - GG_ALL_TERCO_CONFIG.swipeThreshold) {
           proximaEtapa();
         }
-        if (touchendX > touchstartX + GG_ALL_GAME_CONFIG.swipeThreshold) {
+        if (touchendX > touchstartX + GG_ALL_TERCO_CONFIG.swipeThreshold) {
           etapaAnterior();
         }
       }
