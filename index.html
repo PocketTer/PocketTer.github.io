@@ -7,6 +7,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Terço Digital</title>
   <style>
+    :root {
+      --bg-color: #f0f4f8;
+      --text-color: #333;
+      --container-bg: white;
+      --button-bg: #4a90e2;
+      --button-hover-bg: #357abd;
+      --toggle-bg: #ccc;
+      --toggle-active-bg: #4a90e2;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #1a1a1a;
+        --text-color: #f0f0f0;
+        --container-bg: #2a2a2a;
+        --button-bg: #3a7bd5;
+        --button-hover-bg: #2a5a9e;
+        --toggle-bg: #555;
+        --toggle-active-bg: #3a7bd5;
+      }
+    }
+
     body {
       font-family: Arial, sans-serif;
       display: flex;
@@ -15,8 +37,9 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      background-color: #f0f4f8;
-      color: #333;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: background-color 0.3s, color 0.3s;
     }
 
     #menu-container,
@@ -24,9 +47,10 @@
       text-align: center;
       max-width: 600px;
       padding: 20px;
-      background-color: white;
+      background-color: var(--container-bg);
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
     }
 
     #oracao-texto {
@@ -35,7 +59,7 @@
     }
 
     button {
-      background-color: #4a90e2;
+      background-color: var(--button-bg);
       color: white;
       border: none;
       padding: 10px 20px;
@@ -47,7 +71,7 @@
     }
 
     button:hover {
-      background-color: #357abd;
+      background-color: var(--button-hover-bg);
     }
 
     #progresso {
@@ -89,7 +113,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: #ccc;
+      background-color: var(--toggle-bg);
       transition: .4s;
       border-radius: 27px;
     }
@@ -107,7 +131,7 @@
     }
 
     input:checked+.slider {
-      background-color: #4a90e2;
+      background-color: var(--toggle-active-bg);
     }
 
     input:checked+.slider:before {
@@ -121,6 +145,12 @@
 
     #oracao-container {
       position: relative;
+    }
+
+    #theme-toggle-container {
+      position: absolute;
+      top: 10px;
+      left: 10px;
     }
   </style>
 </head>
@@ -137,8 +167,15 @@
       <button id="gloriosos-btn">Mistérios Gloriosos</button>
       <button id="rosario-completo-btn">Rosário Completo</button>
     </div>
+    <div id="theme-toggle-container" class="toggle-container">
+      <label class="toggle-switch" style="transform: scale(0.8);">
+        <input type="checkbox" id="theme-toggle">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label" style="font-size: 0.8em;">Tema Escuro</span>
+    </div>
   </div>
-  <div id="oracao-container" style="display: none;">
+  <div id="oracao-container" style="display: none;" class="swipe-container">
     <div class="toggle-container" style="position: absolute; top: 10px; right: 10px;">
       <label class="toggle-switch" style="transform: scale(0.8);">
         <input type="checkbox" id="pular-ave-marias">
@@ -168,6 +205,8 @@
           'Domingo': 'Gloriosos'
         },
         pularAveMarias: false, // Nova configuração para pular Ave-Marias
+        swipeThreshold: 50, // Limite para detectar um swipe
+        temaEscuro: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches, // Configuração para tema escuro
         misterios: {
           'Gozosos': [
             'Anunciação do Anjo a Maria',
@@ -361,9 +400,29 @@
         atualizarOracao();
       }
       // Adicionar evento para o toggle de pular Ave-Marias
+      // Função para alternar o tema
+      function toggleTheme() {
+        GG_ALL_GAME_CONFIG.temaEscuro = !GG_ALL_GAME_CONFIG.temaEscuro;
+        document.body.classList.toggle('dark-theme', GG_ALL_GAME_CONFIG.temaEscuro);
+        localStorage.setItem('temaEscuro', GG_ALL_GAME_CONFIG.temaEscuro);
+      }
+      // Inicializar o tema
+      if (GG_ALL_GAME_CONFIG.temaEscuro) {
+        document.body.classList.add('dark-theme');
+      }
+      // Adicionar evento para o toggle de tema
+      document.getElementById('theme-toggle').addEventListener('change', toggleTheme);
+      // Adicionar evento para o toggle de pular Ave-Marias
       document.getElementById('pular-ave-marias').addEventListener('change', function(event) {
         GG_ALL_GAME_CONFIG.pularAveMarias = event.target.checked;
       });
+      // Verificar se há uma preferência de tema salva
+      const savedTheme = localStorage.getItem('temaEscuro');
+      if (savedTheme !== null) {
+        GG_ALL_GAME_CONFIG.temaEscuro = savedTheme === 'true';
+        document.body.classList.toggle('dark-theme', GG_ALL_GAME_CONFIG.temaEscuro);
+        document.getElementById('theme-toggle').checked = GG_ALL_GAME_CONFIG.temaEscuro;
+      }
 
       function voltarAoMenu() {
         document.getElementById('menu-container').style.display = 'block';
@@ -385,6 +444,25 @@
           etapaAnterior();
         }
       });
+      // Adicionar suporte a gestos de swipe
+      let touchstartX = 0;
+      let touchendX = 0;
+      document.querySelector('.swipe-container').addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+      });
+      document.querySelector('.swipe-container').addEventListener('touchend', e => {
+        touchendX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        if (touchendX < touchstartX - GG_ALL_GAME_CONFIG.swipeThreshold) {
+          proximaEtapa();
+        }
+        if (touchendX > touchstartX + GG_ALL_GAME_CONFIG.swipeThreshold) {
+          etapaAnterior();
+        }
+      }
     })();
   </script>
 
