@@ -7,6 +7,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Terço Digital</title>
   <style>
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    #rotary-control {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: #f0f0f0;
+      position: relative;
+      margin: 20px auto;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #rotary-knob {
+      width: 20px;
+      height: 20px;
+      background-color: #4a90e2;
+      border-radius: 50%;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     body {
       font-family: Arial, sans-serif;
       display: flex;
@@ -127,6 +159,9 @@
 
 <body>
   <div id="menu-container">
+    <div id="rotary-control">
+      <div id="rotary-knob"></div>
+    </div>
     <h1 id="titulo">Terço Digital</h1>
     <h2>Escolha o Mistério</h2>
     <div class="botoes">
@@ -135,6 +170,7 @@
       <button id="luminosos-btn">Mistérios Luminosos</button>
       <button id="dolorosos-btn">Mistérios Dolorosos</button>
       <button id="gloriosos-btn">Mistérios Gloriosos</button>
+      <button id="rosario-completo-btn">Rosário Completo</button>
     </div>
   </div>
   <div id="oracao-container" style="display: none;">
@@ -157,6 +193,8 @@
   <script>
     (function() {
       let GG_ALL_GAME_CONFIG = {
+        rotaryAngle: 0, // Current angle of the rotary control
+        rotaryThreshold: 30, // Degrees of rotation needed to trigger an action
         diasMisterios: {
           'Segunda-feira': 'Gozosos',
           'Terça-feira': 'Dolorosos',
@@ -213,6 +251,9 @@
       let misterioAtual = 0;
       let contagemAveMaria = 0;
       let misterioEscolhido = '';
+      let rosarioCompleto = false;
+      let ordemRosarioCompleto = ['Gozosos', 'Luminosos', 'Dolorosos', 'Gloriosos'];
+      let indiceRosarioCompleto = 0;
 
       function obterDiaSemana() {
         const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -229,6 +270,8 @@
         etapaAtual = -1;
         misterioAtual = 0;
         contagemAveMaria = 0;
+        rosarioCompleto = tipoMisterio === 'Rosário Completo';
+        indiceRosarioCompleto = 0;
         document.getElementById('menu-container').style.display = 'none';
         document.getElementById('oracao-container').style.display = 'block';
         atualizarOracao();
@@ -241,6 +284,8 @@
           const diaSemana = obterDiaSemana();
           const misteriosDoDia = GG_ALL_GAME_CONFIG.diasMisterios[diaSemana];
           tituloTerco.textContent = `Mistérios ${misteriosDoDia} (${diaSemana})`;
+        } else if (rosarioCompleto) {
+          tituloTerco.textContent = `Rosário Completo - Mistérios ${ordemRosarioCompleto[indiceRosarioCompleto]}`;
         } else {
           tituloTerco.textContent = `Mistérios ${misterioEscolhido}`;
         }
@@ -250,7 +295,14 @@
         console.log(etapaAtual, misterioAtual, contagemAveMaria);
         const oracaoTexto = document.getElementById('oracao-texto');
         const progressoTexto = document.getElementById('progresso');
-        const misteriosAtuais = misterioEscolhido === 'dia' ? obterMisteriosDoDia() : GG_ALL_GAME_CONFIG.misterios[misterioEscolhido];
+        let misteriosAtuais;
+        if (misterioEscolhido === 'dia') {
+          misteriosAtuais = obterMisteriosDoDia();
+        } else if (rosarioCompleto) {
+          misteriosAtuais = GG_ALL_GAME_CONFIG.misterios[ordemRosarioCompleto[indiceRosarioCompleto]];
+        } else {
+          misteriosAtuais = GG_ALL_GAME_CONFIG.misterios[misterioEscolhido];
+        }
         if (etapaAtual === -1) {
           oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Sinal da Cruz'];
           progressoTexto.textContent = 'Sinal da Cruz';
@@ -287,12 +339,14 @@
             oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Ó Meu Jesus'];
             progressoTexto.textContent = `${misterioAtual + 1}º Mistério - Ó Meu Jesus`;
           }
-        } else if (misterioAtual === 5) {
+        } else if (misterioAtual === 5 && (!rosarioCompleto || indiceRosarioCompleto === ordemRosarioCompleto.length - 1)) {
           oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Agradecimento'];
           progressoTexto.textContent = 'Agradecimento';
-        } else {
+        } else if (misterioAtual === 6 && (!rosarioCompleto || indiceRosarioCompleto === ordemRosarioCompleto.length - 1)) {
           oracaoTexto.textContent = GG_ALL_GAME_CONFIG.oracoes['Salve Rainha'];
           progressoTexto.textContent = 'Salve Rainha';
+        } else {
+          proximaEtapa();
         }
       }
 
@@ -308,12 +362,20 @@
         } else {
           misterioAtual++;
         }
-        if (misterioAtual > 6) {
-          alert('Parabéns! Você concluiu o terço.');
-          voltarAoMenu();
-          return;
+        if (misterioAtual > 6 || (rosarioCompleto && misterioAtual > 4 && indiceRosarioCompleto < ordemRosarioCompleto.length - 1)) {
+          if (rosarioCompleto && indiceRosarioCompleto < ordemRosarioCompleto.length - 1) {
+            indiceRosarioCompleto++;
+            misterioAtual = 0;
+            contagemAveMaria = 0;
+            atualizarTitulo();
+          } else {
+            alert('Parabéns! Você concluiu o terço' + (rosarioCompleto ? ' completo' : '') + '.');
+            voltarAoMenu();
+            return;
+          }
         }
         atualizarOracao();
+        updateRotaryControl(0); // Reset rotary control
       }
 
       function etapaAnterior() {
@@ -321,6 +383,11 @@
           if (misterioAtual === 0) {
             if (etapaAtual > -1) {
               etapaAtual--;
+            } else if (rosarioCompleto && indiceRosarioCompleto > 0) {
+              indiceRosarioCompleto--;
+              misterioAtual = 5;
+              contagemAveMaria = 13;
+              atualizarTitulo();
             }
           } else {
             misterioAtual--;
@@ -330,7 +397,34 @@
           contagemAveMaria--;
         }
         atualizarOracao();
+        updateRotaryControl(0); // Reset rotary control
       }
+
+      function updateRotaryControl(angle) {
+        GG_ALL_GAME_CONFIG.rotaryAngle = angle;
+        document.getElementById('rotary-knob').style.transform = `translateX(-50%) rotate(${angle}deg)`;
+      }
+
+      function handleRotaryControl(event) {
+        const rect = event.target.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const angle = Math.atan2(event.clientY - centerY, event.clientX - centerX) * (180 / Math.PI);
+        const deltaAngle = angle - GG_ALL_GAME_CONFIG.rotaryAngle;
+        if (Math.abs(deltaAngle) >= GG_ALL_GAME_CONFIG.rotaryThreshold) {
+          if (deltaAngle > 0 || (deltaAngle < 0 && deltaAngle < -180)) {
+            proximaEtapa();
+          } else {
+            etapaAnterior();
+          }
+        }
+        updateRotaryControl(angle);
+      }
+      document.getElementById('rotary-control').addEventListener('mousemove', handleRotaryControl);
+      document.getElementById('rotary-control').addEventListener('touchmove', function(event) {
+        event.preventDefault();
+        handleRotaryControl(event.touches[0]);
+      });
       // Adicionar evento para o toggle de pular Ave-Marias
       document.getElementById('pular-ave-marias').addEventListener('change', function(event) {
         GG_ALL_GAME_CONFIG.pularAveMarias = event.target.checked;
@@ -345,6 +439,7 @@
       document.getElementById('luminosos-btn').addEventListener('click', () => iniciarTerco('Luminosos'));
       document.getElementById('dolorosos-btn').addEventListener('click', () => iniciarTerco('Dolorosos'));
       document.getElementById('gloriosos-btn').addEventListener('click', () => iniciarTerco('Gloriosos'));
+      document.getElementById('rosario-completo-btn').addEventListener('click', () => iniciarTerco('Rosário Completo'));
       document.getElementById('proximo-btn').addEventListener('click', proximaEtapa);
       document.getElementById('anterior-btn').addEventListener('click', etapaAnterior);
       document.getElementById('voltar-menu-btn').addEventListener('click', voltarAoMenu);
