@@ -177,12 +177,27 @@
     </div>
   </div>
   <div id="oracao-container" style="display: none;" class="swipe-container">
+    <div class="toggle-container" style="position: absolute; top: 10px; left: 10px;">
+      <label class="toggle-switch" style="transform: scale(0.8);">
+        <input type="checkbox" id="terco-com-clausulas">
+        <span class="slider"></span>
+      </label>
+      <span class="toggle-label" style="font-size: 0.8em;">Terço com Cláusulas</span>
+      <span id="clausulas-info" style="cursor: pointer; margin-left: 5px;">?</span>
+    </div>
     <div class="toggle-container" style="position: absolute; top: 10px; right: 10px;">
       <label class="toggle-switch" style="transform: scale(0.8);">
         <input type="checkbox" id="pular-ave-marias">
         <span class="slider"></span>
       </label>
       <span class="toggle-label" style="font-size: 0.8em;">Pular Ave-Marias</span>
+    </div>s
+    <div id="clausulas-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: var(--container-bg); padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); max-width: 80%; z-index: 1000;">
+      <h1>Terço com Cláusulas: Uma Jornada de Meditação Profunda</h1>
+      <p>O Terço com Cláusulas é uma forma especial de rezar o Rosário, adicionando uma pequena frase após o nome de Jesus em cada Ave-Maria. Essa frase, chamada "cláusula", se relaciona ao mistério que está sendo meditado, aprofundando a oração e a imersão na cena bíblica.</p>
+      <p>Por exemplo, no primeiro mistério gozoso, a cláusula seria: "...bendito é o fruto do vosso ventre, Jesus, <b>que concebestes do Espírito Santo</b>".</p>
+      <p>Essa prática, que surgiu no século XV e foi popularizada por São Luís Maria Grignion de Montfort, ajuda a manter o foco na contemplação do mistério e a aprofundar a conexão com a vida de Jesus e Maria.</p>
+      <button id="close-popup" style="margin-top: 10px;">Fechar</button>
     </div>
     <h1 id="titulo-terco">Terço Digital</h1>
     <div id="oracao-texto"></div>
@@ -205,7 +220,8 @@
           'Sábado': 'Gozosos',
           'Domingo': 'Gloriosos'
         },
-        pularAveMarias: false, // Nova configuração para pular Ave-Marias
+        pularAveMarias: false, // Configuração para pular Ave-Marias
+        tercoComClausulas: false, // Nova configuração para terço com cláusulas
         swipeThreshold: 50, // Limite para detectar um swipe
         temaEscuro: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches, // Configuração para tema escuro
         misterios: {
@@ -236,6 +252,36 @@
             'No terceiro mistério glorioso contemplamos a descida do Espírito Santo sobre os Apóstolos reunidos com Maria no Cenáculo',
             'No quarto mistério glorioso contemplamos a Assunção de Maria ao Céu',
             'No quinto mistério glorioso contemplamos a coroação de Maria Santíssima como Rainha do Céu e da Terra'
+          ]
+        },
+        clausulas: {
+          'Gozosos': [
+            'que concebestes do Espírito Santo',
+            'que visitastes Santa Isabel',
+            'que nasceu em Belém',
+            'que foi apresentado no Templo',
+            'que foi encontrado no Templo'
+          ],
+          'Luminosos': [
+            'que foi batizado no Jordão',
+            'que se manifestou em Caná',
+            'que anunciou o Reino de Deus',
+            'que se transfigurou no Tabor',
+            'que instituiu a Eucaristia'
+          ],
+          'Dolorosos': [
+            'que por nós suou sangue',
+            'que por nós foi flagelado',
+            'que por nós foi coroado de espinhos',
+            'que por nós carregou a cruz',
+            'que por nós foi crucificado'
+          ],
+          'Gloriosos': [
+            'que ressuscitou dos mortos',
+            'que subiu ao Céus',
+            'que nos enviou o Espírito Santo',
+            'que vos elevou ao Céu de corpo e alma',
+            'que vos coroou como Rainha do Céu e da Terra'
           ]
         },
         oracoes: {
@@ -295,16 +341,19 @@
       }
 
       function atualizarOracao() {
-        console.log(etapaAtual, misterioAtual, contagemAveMaria);
         const oracaoTexto = document.getElementById('oracao-texto');
         const progressoTexto = document.getElementById('progresso');
         let misteriosAtuais;
+        let clausulasAtuais;
         if (misterioEscolhido === 'dia') {
           misteriosAtuais = obterMisteriosDoDia();
+          clausulasAtuais = GG_ALL_TERCO_CONFIG.clausulas[GG_ALL_TERCO_CONFIG.diasMisterios[obterDiaSemana()]];
         } else if (rosarioCompleto) {
           misteriosAtuais = GG_ALL_TERCO_CONFIG.misterios[ordemRosarioCompleto[indiceRosarioCompleto]];
+          clausulasAtuais = GG_ALL_TERCO_CONFIG.clausulas[ordemRosarioCompleto[indiceRosarioCompleto]];
         } else {
           misteriosAtuais = GG_ALL_TERCO_CONFIG.misterios[misterioEscolhido];
+          clausulasAtuais = GG_ALL_TERCO_CONFIG.clausulas[misterioEscolhido];
         }
         if (etapaAtual === -1) {
           oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Sinal da Cruz'];
@@ -334,7 +383,12 @@
               proximaEtapa();
               return;
             }
-            oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Ave Maria'];
+            let aveMaria = GG_ALL_TERCO_CONFIG.oracoes['Ave Maria'];
+            if (GG_ALL_TERCO_CONFIG.tercoComClausulas) {
+              const clausula = clausulasAtuais[misterioAtual];
+              aveMaria = aveMaria.replace('Jesus.\n', `Jesus ${clausula}.\n`);
+            }
+            oracaoTexto.textContent = aveMaria;
             progressoTexto.textContent = `${misterioAtual + 1}º Mistério - Ave Maria ${contagemAveMaria - 1} de 10`;
           } else if (contagemAveMaria === 12) {
             oracaoTexto.textContent = GG_ALL_TERCO_CONFIG.oracoes['Glória'];
@@ -417,6 +471,26 @@
       // Adicionar evento para o toggle de pular Ave-Marias
       document.getElementById('pular-ave-marias').addEventListener('change', function(event) {
         GG_ALL_TERCO_CONFIG.pularAveMarias = event.target.checked;
+      });
+      // Adicionar evento para o toggle de terço com cláusulas
+      document.getElementById('terco-com-clausulas').addEventListener('change', function(event) {
+        GG_ALL_TERCO_CONFIG.tercoComClausulas = event.target.checked;
+        atualizarOracao();
+      });
+      // Adicionar evento para o botão de informações sobre cláusulas
+      document.getElementById('clausulas-info').addEventListener('click', function() {
+        document.getElementById('clausulas-popup').style.display = 'block';
+      });
+      // Adicionar evento para fechar o popup
+      document.getElementById('close-popup').addEventListener('click', function() {
+        document.getElementById('clausulas-popup').style.display = 'none';
+      });
+      // Fechar o popup se clicar fora dele
+      window.addEventListener('click', function(event) {
+        const popup = document.getElementById('clausulas-popup');
+        if (event.target === popup) {
+          popup.style.display = 'none';
+        }
       });
       // Verificar se há uma preferência de tema salva
       const savedTheme = localStorage.getItem('temaEscuro');
